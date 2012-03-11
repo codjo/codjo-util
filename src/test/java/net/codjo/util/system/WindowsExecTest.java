@@ -1,9 +1,11 @@
 package net.codjo.util.system;
 import java.io.File;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 /**
  *
  */
@@ -14,6 +16,7 @@ public class WindowsExecTest {
 
     @Before
     public void setUp() {
+        Assume.assumeTrue(isWindows());
         executor = new WindowsExec();
     }
 
@@ -79,5 +82,10 @@ public class WindowsExecTest {
         assertTrue(executor.getProcessMessage().contains("test" + NEW_LINE));
         assertTrue(executor.getProcessMessage().contains("0 fichier(s)"));
         assertEquals("", executor.getErrorMessage());
+    }
+
+
+    public static boolean isWindows() {
+        return (System.getProperty("os.name").toLowerCase().contains("win"));
     }
 }
