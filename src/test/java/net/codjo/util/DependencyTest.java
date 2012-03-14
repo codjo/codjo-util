@@ -11,8 +11,7 @@ public class DependencyTest {
 
     @Test
     public void test_dependency() throws Exception {
-        String pomContent = FileUtil.loadContent(new File("pom.xml"));
-
+        String pomContent = FileUtil.loadContent(new File("pom.xml")).replaceAll("\r", "");
         assertTrue("Cette librairie ne doit avoir aucune dépendance (hors JUnit)",
                    pomContent.contains("    <dependencies>\n"
                                        + "        <dependency>\n"
