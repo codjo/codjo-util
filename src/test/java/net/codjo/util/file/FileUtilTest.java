@@ -10,12 +10,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import org.junit.Before;
-import org.junit.Test;
 
 public class FileUtilTest {
     private File tempDir = new File(
@@ -104,7 +105,7 @@ public class FileUtilTest {
 
         long first = dest.lastModified();
 
-        Thread.sleep(100);
+        Thread.sleep(500);
 
         File newSource = new File(sourceFilePath);
         newSource.deleteOnExit();
@@ -155,7 +156,7 @@ public class FileUtilTest {
 
     @Test
     public void test_getExtensionIndex() throws IOException {
-        File fa = new File(".\\test");
+        File fa = new File("./test");
         assertEquals(-1, FileUtil.getExtensionIndex(fa));
 
         File fb = new File(tempDir + "test.txt");
