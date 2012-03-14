@@ -1,8 +1,9 @@
 package net.codjo.util;
-import net.codjo.util.file.FileUtil;
 import java.io.File;
-import static org.junit.Assert.assertTrue;
+import net.codjo.util.file.FileUtil;
 import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 /**
  *
  */
@@ -12,7 +13,13 @@ public class DependencyTest {
     public void test_dependency() throws Exception {
         String pomContent = FileUtil.loadContent(new File("pom.xml"));
 
-        assertTrue("Cette librairie ne doit avoir aucune dépendance",
-                   pomContent.contains("<dependencies/>") || pomContent.contains("<dependencies />"));
+        assertTrue("Cette librairie ne doit avoir aucune dépendance (hors JUnit)",
+                   pomContent.contains("    <dependencies>\n"
+                                       + "        <dependency>\n"
+                                       + "            <groupId>junit</groupId>\n"
+                                       + "            <artifactId>junit</artifactId>\n"
+                                       + "            <scope>test</scope>\n"
+                                       + "        </dependency>\n"
+                                       + "    </dependencies>"));
     }
 }
