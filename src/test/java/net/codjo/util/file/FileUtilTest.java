@@ -257,6 +257,31 @@ public class FileUtilTest {
         assertFalse(file.exists());
     }
 
+    @Test
+    public void test_getScriptsFrom_withMacOsEndOfLine() throws Exception {
+        File scriptsFile = new File(tempDir, "test");
+        FileUtil.saveContent(scriptsFile, "script1.sql\rscript2.sql");
+        String[] scriptsList = FileUtil.loadContentAsLines(scriptsFile);
+        assertEquals(2, scriptsList.length);
+    }
+
+    @Test
+    public void test_getScriptsFrom_withUnixSeparator() throws Exception {
+        File scriptsFile = new File(tempDir, "test");
+        FileUtil.saveContent(scriptsFile, "script1.sql\nscript2.sql\nscript.sql");
+        String[] scriptsList = FileUtil.loadContentAsLines(scriptsFile);
+        assertEquals(3, scriptsList.length);
+    }
+
+
+    @Test
+    public void test_getScriptsFrom_withWindowsSeparator() throws Exception {
+        File scriptsFile = new File(tempDir, "test");
+        FileUtil.saveContent(scriptsFile, "script1.sql\r\nscript2.sql\r\nscript.sql");
+        String[] scriptsList = FileUtil.loadContentAsLines(scriptsFile);
+        assertEquals(3, scriptsList.length);
+    }
+
 
     @Before
     public void setUp() throws Exception {
