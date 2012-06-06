@@ -178,6 +178,21 @@ public class FileUtil {
     }
 
 
+    public static String[] loadContentAsLines(File file) {
+        String contentOfFile;
+        try {
+            contentOfFile = loadContent(file);
+        }
+        catch (IOException e) {
+            throw new RuntimeException("Impossible de lire le fichier " + file.getAbsolutePath(), e);
+        }
+        if ("".equals(contentOfFile)) {
+            return new String[]{};
+        }
+        return contentOfFile.split("(\\r\\n|\\r|\\n)+");
+    }
+
+
     public static void saveContent(File file, String fileContent) throws IOException {
         Writer writer = new BufferedWriter(new FileWriter(file));
         try {
