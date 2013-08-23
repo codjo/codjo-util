@@ -46,7 +46,7 @@ public class SystemTimeSourceTest {
         catch (AssertionError e) {
             try {
                 assertTrue("time must increase", actual > expected);
-                assertTrue("call to getTime() should take less than " + threshold + "ms",
+                assertTrue("call to getTotalTime() should take less than " + threshold + "ms",
                            (actual - expected) < threshold);
                 // probable success
             }
