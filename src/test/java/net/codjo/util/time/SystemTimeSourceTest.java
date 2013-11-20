@@ -9,7 +9,7 @@ import static org.junit.Assert.assertNotNull;
  */
 public class SystemTimeSourceTest {
     @Test
-    public void testDefaultIfNull_notNull() throws Exception {
+    public void test_defaultIfNull_notNull() throws Exception {
         TimeSource expected = new TimeSource() {
             public long getTime() {
                 return 0;
@@ -23,7 +23,7 @@ public class SystemTimeSourceTest {
 
 
     @Test
-    public void testDefaultIfNull_null() throws Exception {
+    public void test_defaultIfNull_null() throws Exception {
         TimeSource actual = SystemTimeSource.defaultIfNull(null);
 
         assertNotNull(actual);
@@ -38,7 +38,7 @@ public class SystemTimeSourceTest {
         long actual = SystemTimeSource.INSTANCE.getTime();
 
         // we expect the 2 calls to System.currentTimeMillis() will run in less than 20 ms.
-        long threshold = 20L;
+        long threshold = 40L;
         try {
             assertEquals(expected, actual);
             // success
