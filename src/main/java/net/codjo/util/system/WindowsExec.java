@@ -1,13 +1,13 @@
 package net.codjo.util.system;
-import net.codjo.util.file.FileUtil;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import net.codjo.util.file.FileUtil;
 /**
- * Execute une commande. Une instance de <code>WindowsExec</code> peut être réutilisé pour executer plusieurs
- * commande de manière sequentiel.
+ * Execute une commande. Une instance de <code>WindowsExec</code> peut être réutilisé pour executer plusieurs commande
+ * de manière sequentiel.
  */
 public class WindowsExec {
     private static final String NEW_LINE = System.getProperty("line.separator");
@@ -17,8 +17,8 @@ public class WindowsExec {
 
 
     /**
-     * Execute de manière synchrone la commande <code>cmd</code>, en recuperant les sorties du process (ie.
-     * stdout et stderr).
+     * Execute de manière synchrone la commande <code>cmd</code>, en recuperant les sorties du process (ie. stdout et
+     * stderr).
      *
      * @param cmd une commande
      *
@@ -30,8 +30,8 @@ public class WindowsExec {
 
 
     /**
-     * Execute de manière synchrone la commande <code>cmd</code>, en recuperant les sorties du process (ie.
-     * stdout et stderr).
+     * Execute de manière synchrone la commande <code>cmd</code>, en recuperant les sorties du process (ie. stdout et
+     * stderr).
      *
      * @param cmd              une commande
      * @param workingDirectory Le repertoire de travail de la commande
@@ -44,26 +44,50 @@ public class WindowsExec {
 
 
     /**
-     * Execute de manière synchrone la commande <code>cmd</code>, en recuperant les sorties du process (ie.
-     * stdout et stderr), dans le repertoire de travail spécifié.
+     * Execute de manière synchrone la commande <code>cmd</code>, en recuperant les sorties du process (ie. stdout et
+     * stderr), dans le repertoire de travail spécifié.
      *
      * @param cmd              une commande
      * @param workingDirectory Le repertoire de travail de la commande
-     * @param timeout          Timeout d'execution (si a la fin du timeout, le process tourne encore on lui
-     *                         fait la po)
+     * @param timeout          Timeout d'execution (si a la fin du timeout, le process tourne encore on lui fait la po)
      *
      * @return Le code retour du process lancé pour la commande.
      */
     public int exec(String cmd, File workingDirectory, int timeout) {
+        Executor executor = new Executor(cmd, workingDirectory);
         if (cmd == null) {
             return buildError("Aucune commande specifiée");
         }
+        return exec(executor, timeout);
+    }
+
+
+    public int exec(String[] commands) {
+        return exec(commands, null, -1);
+    }
+
+
+    public int exec(String[] commands, File workingDirectory) {
+        return exec(commands, workingDirectory, -1);
+    }
+
+
+    public int exec(String[] commands, File workingDirectory, int timeout) {
+        if (commands == null) {
+            return buildError("Aucune commande specifiée");
+        }
+        Executor executor = new Executor(commands, workingDirectory);
+        return exec(executor, timeout);
+    }
+
+
+    private int exec(Executor executor, int timeout) {
         setErrorMessage(null);
         setProcessMessage(null);
         Process process = null;
 
         try {
-            process = Runtime.getRuntime().exec(cmd, null, workingDirectory);
+            process = executor.doIt();
 
             if (timeout > 0) {
                 createTimeoutKiller(process, timeout);
@@ -213,6 +237,35 @@ public class WindowsExec {
         return -1;
     }
 
+
+    private class Executor {
+        private String cmd;
+        private String[] commands;
+        private File workingDirectory;
+
+
+        public Executor(String cmd, File workingDirectory) {
+            this.cmd = cmd;
+            this.workingDirectory = workingDirectory;
+        }
+
+
+        public Executor(String[] commands, File workingDirectory) {
+            this.commands = commands;
+            this.workingDirectory = workingDirectory;
+        }
+
+
+        public Process doIt() throws IOException {
+            if (cmd != null) {
+                return Runtime.getRuntime().exec(cmd, null, workingDirectory);
+            }
+            else if (commands != null) {
+                return Runtime.getRuntime().exec(commands, null, workingDirectory);
+            }
+            return null;
+        }
+    }
 
     /**
      * Lecteur d'un flux.
