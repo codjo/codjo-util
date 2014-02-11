@@ -1,10 +1,13 @@
 package net.codjo.util.system;
 import java.io.File;
+import net.codjo.util.file.FileUtil;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 /**
  *
@@ -24,6 +27,17 @@ public class WindowsExecTest {
     @Test
     public void test_exec() throws Exception {
         int returnCode = executor.exec("cmd.exe /Y /C echo toto");
+
+        assertEquals(0, returnCode);
+        assertEquals("toto" + NEW_LINE, executor.getProcessMessage());
+        assertEquals("", executor.getErrorMessage());
+    }
+
+
+    @Test
+    public void test_execWithArray() throws Exception {
+        String[] cmd = new String[]{"cmd.exe", "/Y", "/C", "echo toto"};
+        int returnCode = executor.exec(cmd);
 
         assertEquals(0, returnCode);
         assertEquals("toto" + NEW_LINE, executor.getProcessMessage());
@@ -82,6 +96,40 @@ public class WindowsExecTest {
         assertTrue(executor.getProcessMessage().contains("test" + NEW_LINE));
         assertTrue(executor.getProcessMessage().contains("0 fichier(s)"));
         assertEquals("", executor.getErrorMessage());
+    }
+
+
+    @Test
+    public void test_exec_outputRedirection() throws Exception {
+        deleteFile(new File("target/result.txt"));
+        String[] commands = new String[]{"cmd.exe", "/C", "dir > result.txt"};
+        int returnCode = executor.exec(commands, new File("target"));
+
+        assertEquals("", executor.getErrorMessage());
+        assertEquals("", executor.getProcessMessage());
+        assertEquals(0, returnCode);
+        assertThat(new File("target/result.txt").exists(), is(true));
+    }
+
+
+    @SuppressWarnings({"ResultOfMethodCallIgnored"})
+    private void deleteFile(File file) {
+        file.delete();
+    }
+
+
+    @Test
+    public void test_exec_inputRedirection() throws Exception {
+        File input = new File("target/input.txt");
+        FileUtil.saveContent(input, "a\nl\ng");
+
+        String[] commands = new String[]{"cmd.exe", "/C", "sort < input.txt"};
+        int returnCode = executor.exec(commands, new File("target"), -1);
+
+        deleteFile(input);
+        assertEquals("", executor.getErrorMessage());
+        assertEquals("a\r\ng\r\nl\r\n", executor.getProcessMessage());
+        assertEquals(0, returnCode);
     }
 
 
